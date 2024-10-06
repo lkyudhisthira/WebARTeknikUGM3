@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AR tanpa Marker</title>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.js"></script>
+</head>
+<body style="margin: 0; overflow: hidden;">
+    <a-scene embedded arjs="sourceType: webcam; videoTexture: true; debugUIEnabled: false;">
+        <a-entity camera></a-entity>
+        <a-entity id="model-container"></a-entity>
+    </a-scene>
+
+    <script>
+        document.querySelector('a-scene').addEventListener('click', function (event) {
+            const intersection = event.detail.intersection;
+            console.log(intersection); // Debugging: untuk melihat intersection
+            if (intersection) {
+                const modelContainer = document.getElementById('model-container');
+                const model = document.createElement('a-entity');
+                model.setAttribute('gltf-model', 'url(https://raw.githubusercontent.com/lkyudhisthira/WebARTeknikUGM3/main/assets/fakultasteknik4.glb)'); // Ganti dengan path model GLB Anda
+                model.setAttribute('scale', '2 2 2'); // Skala model
+                model.setAttribute('position', `${intersection.point.x} ${intersection.point.y} ${intersection.point.z}`);
+                modelContainer.appendChild(model); // Menambahkan model ke container
+            } else {
+                console.log('Tidak ada intersection!');
+            }
+        });
+    </script>
+</body>
+</html>
