@@ -3,27 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AR tanpa Marker</title>
+    <title>AR Tanpa Marker</title>
 
     <!-- Mengimpor A-Frame dan AR.js -->
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.js"></script>
 </head>
 <body style="margin: 0; overflow: hidden;">
-    <a-scene embedded arjs="sourceType: webcam; videoTexture: true; debugUIEnabled: false;">
+    <a-scene embedded arjs="sourceType: webcam; videoTexture: true; debugUIEnabled: false; trackingMethod: best;">
         <!-- Kamera AR -->
         <a-entity camera></a-entity>
 
         <!-- Menyimpan posisi objek -->
         <a-entity id="model-container"></a-entity>
+
+        <!-- Kotak untuk memeriksa jika elemen dapat ditampilkan -->
+        <a-box position="0 0 -5" scale="1 1 1" color="red"></a-box>
     </a-scene>
 
     <script>
         // Menambahkan event listener untuk mendeteksi ketukan pada layar
         document.querySelector('a-scene').addEventListener('click', function (event) {
-            // Mengambil posisi dunia dari raycast (tempat di mana pengguna mengetuk)
-            const intersection = event.detail.intersection;
             console.log('Screen clicked!'); // Menandai bahwa layar sudah diklik
+            const intersection = event.detail.intersection;
 
             if (intersection) {
                 console.log('Intersection detected:', intersection); // Menunjukkan informasi intersection
@@ -40,7 +42,7 @@
 
                 // ** Visualisasi sementara: menambahkan kotak **
                 const box = document.createElement('a-box'); // Membuat entitas kotak
-                box.setAttribute('position', `${intersection.point.x} ${intersection.point.y} ${intersection.point.z}`); // Mengatur posisi
+                box.setAttribute('position', `${intersection.point.x} ${intersection.point.y} ${intersection.point.z}`); // Mengatur posisi kotak
                 box.setAttribute('scale', '0.5 0.5 0.5'); // Mengatur skala kotak
                 box.setAttribute('color', 'red'); // Mengatur warna kotak
                 modelContainer.appendChild(box); // Menambahkan kotak ke container
