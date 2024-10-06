@@ -40,13 +40,24 @@
                 box.setAttribute('scale', '0.5 0.5 0.5');
                 box.setAttribute('color', 'blue'); // Mengubah warna kotak untuk visualisasi
                 modelContainer.appendChild(box); // Menambahkan kotak ke container
+                console.log('Box added at:', intersection.point); // Log posisi kotak
 
                 // Membuat entitas model baru
                 const model = document.createElement('a-entity');
-                model.setAttribute('gltf-model', 'url(https://raw.githubusercontent.com/<username>/<repository-name>/main/assets/fakultasteknik4.glb)'); // Ganti dengan path model GLB Anda
-                model.setAttribute('scale', '2 2 2');
+                model.setAttribute('gltf-model', 'url(https://cdn.rawgit.com/KhronosGroup/glTF-Sample-Models/master/2.0/AnimatedCube/glTF/AnimatedCube.gltf'); // Model contoh
+                model.setAttribute('scale', '0.5 0.5 0.5'); // Skala model
                 model.setAttribute('position', `${intersection.point.x} ${intersection.point.y} ${intersection.point.z}`);
                 modelContainer.appendChild(model); // Menambahkan model ke container
+                console.log('Model added:', model); // Log jika model ditambahkan
+
+                // Menangani kesalahan pemuatan model
+                model.addEventListener('model-loaded', function () {
+                    console.log('Model successfully loaded!');
+                });
+
+                model.addEventListener('error', function () {
+                    console.error('Failed to load model!');
+                });
             } else {
                 console.log('Tidak ada intersection!'); // Log jika tidak ada intersection
             }
