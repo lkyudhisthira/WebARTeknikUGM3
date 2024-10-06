@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>AR Tanpa Marker</title>
 
     <!-- Mengimpor A-Frame dan AR.js -->
@@ -18,34 +18,34 @@
         <a-entity id="model-container"></a-entity>
 
         <!-- Kotak untuk memeriksa jika elemen dapat ditampilkan -->
-        <a-box position="0 0 -5" scale="1 1 1" color="red"></a-box>
+        <a-box position="0 0 -2" scale="1 1 1" color="red"></a-box>
     </a-scene>
 
     <script>
         // Menambahkan event listener untuk mendeteksi ketukan pada layar
         document.querySelector('a-scene').addEventListener('click', function (event) {
-            console.log('Screen clicked!'); // Menandai bahwa layar sudah diklik
             const intersection = event.detail.intersection;
 
             if (intersection) {
-                console.log('Intersection detected:', intersection); // Menunjukkan informasi intersection
+                // Menandakan bahwa kita berhasil mendeteksi intersection
+                console.log('Intersection detected:', intersection);
 
                 // Mengambil referensi ke container model
                 const modelContainer = document.getElementById('model-container');
 
+                // Menambahkan kotak untuk visualisasi
+                const box = document.createElement('a-box');
+                box.setAttribute('position', `${intersection.point.x} ${intersection.point.y} ${intersection.point.z}`);
+                box.setAttribute('scale', '0.5 0.5 0.5');
+                box.setAttribute('color', 'blue'); // Mengubah warna kotak untuk visualisasi
+                modelContainer.appendChild(box); // Menambahkan kotak ke container
+
                 // Membuat entitas model baru
                 const model = document.createElement('a-entity');
-                model.setAttribute('gltf-model', 'url(https://raw.githubusercontent.com/lkyudhisthira/WebARTeknikUGM3/main/assets/fakultasteknik4.glb)'); // Ganti dengan path model GLB Anda
-                model.setAttribute('scale', '2 2 2'); // Skala model
+                model.setAttribute('gltf-model', 'url(https://raw.githubusercontent.com/<username>/<repository-name>/main/assets/fakultasteknik4.glb)'); // Ganti dengan path model GLB Anda
+                model.setAttribute('scale', '2 2 2');
                 model.setAttribute('position', `${intersection.point.x} ${intersection.point.y} ${intersection.point.z}`);
                 modelContainer.appendChild(model); // Menambahkan model ke container
-
-                // ** Visualisasi sementara: menambahkan kotak **
-                const box = document.createElement('a-box'); // Membuat entitas kotak
-                box.setAttribute('position', `${intersection.point.x} ${intersection.point.y} ${intersection.point.z}`); // Mengatur posisi kotak
-                box.setAttribute('scale', '10 10 10'); // Mengatur skala kotak
-                box.setAttribute('color', 'red'); // Mengatur warna kotak
-                modelContainer.appendChild(box); // Menambahkan kotak ke container
             } else {
                 console.log('Tidak ada intersection!');
             }
