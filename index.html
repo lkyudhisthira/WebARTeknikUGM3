@@ -8,8 +8,21 @@
     <!-- Mengimpor A-Frame dan AR.js -->
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.js"></script>
+    <style>
+        body { margin: 0; }
+        #overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0); /* Transparan */
+            z-index: 1;
+        }
+    </style>
 </head>
-<body style="margin: 0; overflow: hidden;">
+<body>
+    <div id="overlay"></div> <!-- Overlay untuk mendeteksi klik -->
     <a-scene embedded arjs="sourceType: webcam; videoTexture: true; debugUIEnabled: false; trackingMethod: best;">
         <!-- Kamera AR -->
         <a-entity camera></a-entity>
@@ -22,11 +35,11 @@
     </a-scene>
 
     <script>
-        // Menambahkan event listener untuk mendeteksi ketukan pada layar
-        document.querySelector('a-scene').addEventListener('click', function (event) {
-            console.log('Screen clicked!'); // Log saat layar diklik
+        // Menambahkan event listener untuk mendeteksi ketukan pada overlay
+        document.getElementById('overlay').addEventListener('click', function (event) {
+            console.log('Overlay clicked!'); // Log saat overlay diklik
 
-            const intersection = event.detail.intersection;
+            const intersection = document.querySelector('a-scene').components['arjs'].getIntersection(event);
 
             if (intersection) {
                 console.log('Intersection detected:', intersection); // Menandakan bahwa kita berhasil mendeteksi intersection
