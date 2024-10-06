@@ -4,26 +4,46 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AR tanpa Marker</title>
+
+    <!-- Mengimpor A-Frame dan AR.js -->
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.js"></script>
 </head>
 <body style="margin: 0; overflow: hidden;">
     <a-scene embedded arjs="sourceType: webcam; videoTexture: true; debugUIEnabled: false;">
+        <!-- Kamera AR -->
         <a-entity camera></a-entity>
+
+        <!-- Menyimpan posisi objek -->
         <a-entity id="model-container"></a-entity>
     </a-scene>
 
     <script>
+        // Menambahkan event listener untuk mendeteksi ketukan pada layar
         document.querySelector('a-scene').addEventListener('click', function (event) {
+            // Mengambil posisi dunia dari raycast (tempat di mana pengguna mengetuk)
             const intersection = event.detail.intersection;
-            console.log(intersection); // Debugging: untuk melihat intersection
+            console.log('Screen clicked!'); // Menandai bahwa layar sudah diklik
+
             if (intersection) {
+                console.log('Intersection detected:', intersection); // Menunjukkan informasi intersection
+
+                // Mengambil referensi ke container model
                 const modelContainer = document.getElementById('model-container');
+
+                // Membuat entitas model baru
                 const model = document.createElement('a-entity');
                 model.setAttribute('gltf-model', 'url(https://raw.githubusercontent.com/lkyudhisthira/WebARTeknikUGM3/main/assets/fakultasteknik4.glb)'); // Ganti dengan path model GLB Anda
                 model.setAttribute('scale', '2 2 2'); // Skala model
                 model.setAttribute('position', `${intersection.point.x} ${intersection.point.y} ${intersection.point.z}`);
                 modelContainer.appendChild(model); // Menambahkan model ke container
+
+                // ** Visualisasi sementara: menambahkan kotak **
+                const box = document.createElement('a-box'); // Membuat entitas kotak
+                box.setAttribute('position', `${intersection.point.x} ${intersection.point.y} ${intersection.point.z}`); // Mengatur posisi
+                box.setAttribute('scale', '0.5 0.5 0.5'); // Mengatur skala kotak
+                box.setAttribute('color', 'red'); // Mengatur warna kotak
+                modelContainer.appendChild(box); // Menambahkan kotak ke container
             } else {
                 console.log('Tidak ada intersection!');
             }
