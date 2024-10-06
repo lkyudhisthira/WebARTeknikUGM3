@@ -7,7 +7,7 @@
 
     <!-- Mengimpor A-Frame dan AR.js -->
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.js"></script>
+    <script src="https://cdn.rawgit.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
 </head>
 <body style="margin: 0; overflow: hidden;">
     <a-scene embedded arjs="sourceType: webcam; videoTexture: true; debugUIEnabled: false; trackingMethod: best;">
@@ -24,11 +24,12 @@
     <script>
         // Menambahkan event listener untuk mendeteksi ketukan pada layar
         document.querySelector('a-scene').addEventListener('click', function (event) {
+            console.log('Screen clicked!'); // Log saat layar diklik
+
             const intersection = event.detail.intersection;
 
             if (intersection) {
-                // Menandakan bahwa kita berhasil mendeteksi intersection
-                console.log('Intersection detected:', intersection);
+                console.log('Intersection detected:', intersection); // Menandakan bahwa kita berhasil mendeteksi intersection
 
                 // Mengambil referensi ke container model
                 const modelContainer = document.getElementById('model-container');
@@ -47,7 +48,7 @@
                 model.setAttribute('position', `${intersection.point.x} ${intersection.point.y} ${intersection.point.z}`);
                 modelContainer.appendChild(model); // Menambahkan model ke container
             } else {
-                console.log('Tidak ada intersection!');
+                console.log('Tidak ada intersection!'); // Log jika tidak ada intersection
             }
         });
     </script>
