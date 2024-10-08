@@ -35,7 +35,7 @@
             const sceneEl = document.querySelector('a-scene');
             const arjs = sceneEl.components['arjs'];
 
-            // Mendapatkan koordinat klik relatif terhadap scene
+            // Mendapatkan posisi klik relatif terhadap scene
             const rect = sceneEl.canvas.getBoundingClientRect();
             const x = (event.clientX - rect.left) / rect.width * 2 - 1;
             const y = -((event.clientY - rect.top) / rect.height * 2 - 1);
