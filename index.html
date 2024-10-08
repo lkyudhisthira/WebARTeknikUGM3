@@ -3,36 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AR Tanpa Marker - Debugging</title>
+    <title>AR Tanpa Marker</title>
 
     <!-- Mengimpor A-Frame dan AR.js -->
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.js"></script>
+
     <style>
         body { margin: 0; overflow: hidden; }
+        #log { position: absolute; top: 10px; left: 10px; color: red; }
     </style>
 </head>
 <body>
+    <div id="log"></div> <!-- Log untuk debugging -->
+    
     <!-- Scene A-Frame untuk AR -->
-    <a-scene embedded arjs="sourceType: webcam; videoTexture: true; debugUIEnabled: false; trackingMethod: best;">
+    <a-scene embedded arjs="sourceType: webcam; videoTexture: true; debugUIEnabled: false;">
         <!-- Kamera AR -->
         <a-entity camera></a-entity>
 
-        <!-- Kontainer untuk objek -->
+        <!-- Kontainer untuk model 3D -->
         <a-entity id="model-container"></a-entity>
 
-        <!-- Kotak visualisasi untuk debugging -->
+        <!-- Kotak untuk debugging (visualisasi) -->
         <a-box position="0 0 -2" scale="1 1 1" color="red"></a-box>
     </a-scene>
 
     <script>
-        // Event listener untuk sentuhan di layar
-        document.querySelector('a-scene').addEventListener('touchstart', function (event) {
-            console.log('Layar disentuh!');
-            alert('Sentuhan terdeteksi!');  // Untuk memverifikasi event sentuhan
+        // Log function untuk debugging
+        const log = (msg) => {
+            document.getElementById('log').innerText = msg;
+        };
 
-            // Untuk sekarang, kita hanya menampilkan pesan alert
-            // Nanti kita bisa lanjutkan raycaster dan intersection detection jika ini bekerja
+        // Event listener untuk touch
+        document.querySelector('a-scene').addEventListener('click', function (event) {
+            log('Layar disentuh!');
+            // Raycaster memproyeksikan sentuhan ke dunia 3D
+
+            // Ambil elemen scene dan kamera
+            const scene = document.querySelector('a-scene');
+            const camera = document.querySelector('[camera]').object3D;
+
+            // Posisi sentuhan relatif ke layar
+            const touchPoint = event.touches ? event.touches[0] : event;
+            const x = (touchPoint.clientX / window.innerWidth) * 2 - 1;
+            const y = -(touchPoint.clientY / window.innerHeight) * 2 + 1;
+
+            // Buat raycaster dari kamera ke arah sentuhan
+            const raycaster = new THREE.Raycaster();
+            raycaster.setFromCamera({ x, y }, camera);
+
+            // Buat plane horizontal untuk intersect dengan ray
+            const plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);  // Sumbu Y
+            const intersection = new THREE.Vector3();
+            raycaster.ray.intersectPlane(plane, intersection);
+
+            // Jika ada intersection, tampilkan model pada posisi tersebut
+            if (intersection) {
+                log(`Intersection detected at: x=${intersection.x}, y=${intersection.y}, z=${intersection.z}`);
+
+                // Kontainer model
+                const modelContainer = document.getElementById('model-container');
+
+                // Hapus model sebelumnya jika ada
+                modelContainer.innerHTML = '';
+
+                // Tambahkan kotak visualisasi (untuk melihat apakah sentuhan bekerja)
+                const box = document.createElement('a-box');
+                box.setAttribute('position', `${intersection.x} ${intersection.y} ${intersection.z}`);
+                box.setAttribute('scale', '0.5 0.5 0.5');
+                box.setAttribute('color', 'blue');
+                modelContainer.appendChild(box);
+
+                // Tambahkan model GLB ke scene
+                const model = document.createElement('a-entity');
+                model.setAttribute('gltf-model', 'url(https://cdn.rawgit.com/KhronosGroup/glTF-Sample-Models/master/2.0/AnimatedCube/glTF/AnimatedCube.gltf)');
+                model.setAttribute('scale', '0.5 0.5 0.5');
+                model.setAttribute('position', `${intersection.x} ${intersection.y} ${intersection.z}`);
+                modelContainer.appendChild(model);
+
+                model.addEventListener('model-loaded', () => {
+                    log('Model berhasil dimuat!');
+                });
+
+                model.addEventListener('error', () => {
+                    log('Gagal memuat model!');
+                });
+            } else {
+                log('Tidak ada intersection!');
+            }
         });
     </script>
 </body>
