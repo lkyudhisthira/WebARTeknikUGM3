@@ -15,7 +15,7 @@
     </style>
 </head>
 <body>
-    <div id="log"></div> <!-- Log untuk debugging -->
+    <div id="log">Menyentuh layar...</div> <!-- Log untuk debugging -->
     
     <!-- Scene A-Frame untuk AR -->
     <a-scene embedded arjs="sourceType: webcam; videoTexture: true; debugUIEnabled: false;">
@@ -30,26 +30,31 @@
     </a-scene>
 
     <script>
-        // Log function untuk debugging
+        // Fungsi log untuk debugging
         const log = (msg) => {
             document.getElementById('log').innerText = msg;
         };
 
-        // Event listener untuk touch
-        document.querySelector('a-scene').addEventListener('click', function (event) {
-            log('Layar disentuh!');
-            // Raycaster memproyeksikan sentuhan ke dunia 3D
+        // Fungsi untuk mendeteksi sentuhan atau klik
+        function handleInteraction(event) {
+            log('Interaksi terdeteksi!');
 
             // Ambil elemen scene dan kamera
             const scene = document.querySelector('a-scene');
             const camera = document.querySelector('[camera]').object3D;
 
             // Posisi sentuhan relatif ke layar
-            const touchPoint = event.touches ? event.touches[0] : event;
-            const x = (touchPoint.clientX / window.innerWidth) * 2 - 1;
-            const y = -(touchPoint.clientY / window.innerHeight) * 2 + 1;
+            let x, y;
+            if (event.touches) {  // Untuk perangkat mobile
+                const touch = event.touches[0];
+                x = (touch.clientX / window.innerWidth) * 2 - 1;
+                y = -(touch.clientY / window.innerHeight) * 2 + 1;
+            } else {  // Untuk klik di desktop
+                x = (event.clientX / window.innerWidth) * 2 - 1;
+                y = -(event.clientY / window.innerHeight) * 2 + 1;
+            }
 
-            // Buat raycaster dari kamera ke arah sentuhan
+            // Buat raycaster dari kamera ke arah sentuhan/klik
             const raycaster = new THREE.Raycaster();
             raycaster.setFromCamera({ x, y }, camera);
 
@@ -60,7 +65,7 @@
 
             // Jika ada intersection, tampilkan model pada posisi tersebut
             if (intersection) {
-                log(`Intersection detected at: x=${intersection.x}, y=${intersection.y}, z=${intersection.z}`);
+                log(`Intersection di: x=${intersection.x}, y=${intersection.y}, z=${intersection.z}`);
 
                 // Kontainer model
                 const modelContainer = document.getElementById('model-container');
@@ -92,7 +97,12 @@
             } else {
                 log('Tidak ada intersection!');
             }
-        });
+        }
+
+        // Event listener untuk klik dan sentuhan
+        document.querySelector('a-scene').addEventListener('click', handleInteraction);
+        document.querySelector('a-scene').addEventListener('touchstart', handleInteraction);
+
     </script>
 </body>
 </html>
