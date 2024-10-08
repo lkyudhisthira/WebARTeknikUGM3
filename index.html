@@ -1,82 +1,54 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AR Tanpa Marker</title>
+<script src="https://cdn.jsdelivr.net/gh/aframevr/aframe@1.3.0/dist/aframe-master.min.js"></script>
+<script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
 
-    <!-- Mengimpor A-Frame dan AR.js -->
-    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.js"></script>
-    <style>
-        body { margin: 0; }
-        #overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-            pointer-events: auto; /* Pastikan overlay bisa mendeteksi klik */
-        }
-    </style>
-</head>
-<body>
-    <div id="overlay"></div> <!-- Overlay untuk mendeteksi klik -->
-    <a-scene embedded arjs="sourceType: webcam; videoTexture: true; debugUIEnabled: false; trackingMethod: best;">
-        <a-entity camera></a-entity>
-        <a-box position="0 0 -2" scale="1 1 1" color="red"></a-box>
-        <a-entity id="model-container"></a-entity>
-    </a-scene>
+<style>
+  .arjs-loader {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 
-    <script>
-        // Event listener untuk mendeteksi ketukan pada overlay
-        document.getElementById('overlay').addEventListener('click', function (event) {
-            const sceneEl = document.querySelector('a-scene');
-            const arjs = sceneEl.components['arjs'];
+  .arjs-loader div {
+    text-align: center;
+    font-size: 1.25em;
+    color: white;
+  }
+</style>
 
-            // Mendapatkan posisi klik relatif terhadap scene
-            const rect = sceneEl.canvas.getBoundingClientRect();
-            const x = (event.clientX - rect.left) / rect.width * 2 - 1;
-            const y = -((event.clientY - rect.top) / rect.height * 2 - 1);
-
-            // Mendapatkan posisi di dunia 3D
-            const camera = sceneEl.camera.el.object3D;
-            const direction = new THREE.Vector3(x, y, 0.5).unproject(camera);
-            const raycaster = new THREE.Raycaster(camera.position, direction.sub(camera.position).normalize());
-
-            // Raycasting untuk mendeteksi objek
-            const intersects = raycaster.intersectObjects(sceneEl.object3D.children, true);
-
-            if (intersects.length > 0) {
-                const intersection = intersects[0];
-                console.log('Intersection detected:', intersection); // Log intersection
-
-                // Mengambil referensi ke container model
-                const modelContainer = document.getElementById('model-container');
-
-                // Menghapus model yang sudah ada
-                modelContainer.innerHTML = '';
-
-                // Membuat entitas model baru
-                const model = document.createElement('a-entity');
-                model.setAttribute('gltf-model', 'url(https://raw.githubusercontent.com/lkyudhisthira/WebARTeknikUGM3/main/assets/fakultasteknik4.glb)'); // Path model GLB Anda
-                model.setAttribute('scale', '0.5 0.5 0.5'); // Skala model
-                model.setAttribute('position', `${intersection.point.x} ${intersection.point.y} ${intersection.point.z}`);
-                modelContainer.appendChild(model); // Menambahkan model ke container
-
-                // Menangani kesalahan pemuatan model
-                model.addEventListener('model-loaded', function () {
-                    console.log('Model successfully loaded!');
-                });
-
-                model.addEventListener('error', function () {
-                    console.error('Failed to load model!');
-                });
-            } else {
-                console.log('Tidak ada intersection!'); // Log jika tidak ada intersection
-            }
-        });
-    </script>
+<body style="margin : 0px; overflow: hidden;">
+  <!-- minimal loader shown until image descriptors are loaded -->
+  <div class="arjs-loader">
+    <div>Loading, please wait...</div>
+  </div>
+  <a-scene
+    vr-mode-ui="enabled: false;"
+    renderer="logarithmicDepthBuffer: true; precision: medium;"
+    embedded
+    arjs="trackingMethod: best; sourceType: webcam;debugUIEnabled: false;"
+  >
+    <!-- we use cors proxy to avoid cross-origin problems ATTENTION! you need to set up your server -->
+    <a-nft
+      type="nft"
+      url="your-server/https://raw.githack.com/AR-js-org/AR.js/master/aframe/examples/image-tracking/nft/trex/trex-image/trex"
+      smooth="true"
+      smoothCount="10"
+      smoothTolerance=".01"
+      smoothThreshold="5"
+    >
+      <a-entity
+        gltf-model="your-server/https://raw.githack.com/AR-js-org/AR.js/master/aframe/examples/image-tracking/nft/trex/scene.gltf"
+        scale="5 5 5"
+        position="150 300 -100"
+      >
+      </a-entity>
+    </a-nft>
+    <a-entity camera></a-entity>
+  </a-scene>
 </body>
-</html>
