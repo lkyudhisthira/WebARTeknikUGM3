@@ -32,7 +32,9 @@
     <script>
         // Event listener untuk mendeteksi ketukan pada overlay
         document.getElementById('overlay').addEventListener('click', function (event) {
-            const intersection = document.querySelector('a-scene').components['arjs'].getIntersection(event);
+            const sceneEl = document.querySelector('a-scene');
+            const cameraEl = sceneEl.querySelector('a-entity[camera]');
+            const intersection = sceneEl.components['arjs'].getIntersection(event);
 
             if (intersection) {
                 console.log('Intersection detected:', intersection); // Log intersection
