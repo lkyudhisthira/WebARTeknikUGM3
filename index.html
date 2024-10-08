@@ -22,7 +22,7 @@
 <body>
     <div id="overlay"></div>
     <a-scene embedded arjs="sourceType: webcam; trackingMethod: best;">
-        <a-entity camera position="0 0 0" look-controls></a-entity>
+        <a-entity camera="fov: 80" position="0 0 0" look-controls></a-entity>
         <a-entity id="model-container"></a-entity>
     </a-scene>
 
@@ -57,7 +57,7 @@
                 // Membuat entitas model baru
                 const model = document.createElement('a-entity');
                 model.setAttribute('gltf-model', 'url(https://raw.githubusercontent.com/lkyudhisthira/WebARTeknikUGM3/main/assets/fakultasteknik4.glb)'); // Path model GLB Anda
-                model.setAttribute('scale', '0.5 0.5 0.5'); // Skala model
+                model.setAttribute('scale', '0.2 0.2 0.2'); // Skala model yang lebih kecil
                 model.setAttribute('position', `${intersection.point.x} ${intersection.point.y} ${intersection.point.z}`);
                 modelContainer.appendChild(model); // Menambahkan model ke container
 
