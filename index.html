@@ -33,17 +33,31 @@
         // Event listener untuk mendeteksi ketukan pada overlay
         document.getElementById('overlay').addEventListener('click', function (event) {
             const sceneEl = document.querySelector('a-scene');
-            const cameraEl = sceneEl.querySelector('a-entity[camera]');
-            const intersection = sceneEl.components['arjs'].getIntersection(event);
+            const arjs = sceneEl.components['arjs'];
 
-            if (intersection) {
+            // Dapatkan posisi mouse di dunia 3D
+            const raycaster = new THREE.Raycaster();
+            const mouse = new THREE.Vector2();
+            const canvas = sceneEl.canvas; // Ambil elemen canvas
+
+            // Hitung posisi mouse di normalisasi (-1 ke 1)
+            const rect = canvas.getBoundingClientRect();
+            mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+            mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+            // Raycasting untuk mendeteksi objek
+            raycaster.setFromCamera(mouse, sceneEl.camera.object3D);
+            const intersects = raycaster.intersectObjects(sceneEl.object3D.children, true);
+
+            if (intersects.length > 0) {
+                const intersection = intersects[0];
                 console.log('Intersection detected:', intersection); // Log intersection
 
                 // Mengambil referensi ke container model
                 const modelContainer = document.getElementById('model-container');
 
                 // Menghapus model yang sudah ada
-                modelContainer.innerHTML = ''; 
+                modelContainer.innerHTML = '';
 
                 // Membuat entitas model baru
                 const model = document.createElement('a-entity');
