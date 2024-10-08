@@ -2,117 +2,18 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AR Tanpa Marker</title>
-
-    <!-- Mengimpor A-Frame dan AR.js -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test GLB Model</title>
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.js"></script>
-
-    <style>
-        body { margin: 0; overflow: hidden; }
-        #log { position: absolute; top: 10px; left: 10px; color: red; z-index: 2; }
-        #overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0); /* Transparan */
-            z-index: 2; /* Di atas AR */
-        }
-    </style>
 </head>
 <body>
-    <div id="log">Menunggu interaksi...</div> <!-- Log untuk debugging -->
-    <div id="overlay"></div> <!-- Overlay transparan untuk deteksi sentuhan -->
+    <a-scene>
+        <a-assets>
+            <a-asset-item id="model-glb" src="assets/fakultasteknik4.glb"></a-asset-item>
+        </a-assets>
 
-    <!-- Scene A-Frame untuk AR -->
-    <a-scene embedded arjs="sourceType: webcam; videoTexture: true; debugUIEnabled: false;">
-        <!-- Kamera AR -->
-        <a-entity camera></a-entity>
-
-        <!-- Kontainer untuk model 3D -->
-        <a-entity id="model-container"></a-entity>
-
-        <!-- Kotak untuk debugging (visualisasi) -->
-        <a-box position="0 0 -2" scale="1 1 1" color="red"></a-box>
+        <a-entity gltf-model="#model-glb" position="0 1 -5" scale="2 2 2"></a-entity>
+        <a-camera position="0 1.6 0"></a-camera>
     </a-scene>
-
-    <script>
-        // Fungsi log untuk debugging
-        const log = (msg) => {
-            document.getElementById('log').innerText = msg;
-        };
-
-        // Fungsi untuk mendeteksi sentuhan atau klik
-        function handleInteraction(event) {
-            log('Interaksi terdeteksi!');
-
-            // Ambil elemen scene dan kamera
-            const scene = document.querySelector('a-scene');
-            const camera = document.querySelector('[camera]').object3D;
-
-            // Posisi sentuhan relatif ke layar
-            let x, y;
-            if (event.touches) {  // Untuk perangkat mobile
-                const touch = event.touches[0];
-                x = (touch.clientX / window.innerWidth) * 2 - 1;
-                y = -(touch.clientY / window.innerHeight) * 2 + 1;
-            } else {  // Untuk klik di desktop
-                x = (event.clientX / window.innerWidth) * 2 - 1;
-                y = -(event.clientY / window.innerHeight) * 2 + 1;
-            }
-
-            // Buat raycaster dari kamera ke arah sentuhan/klik
-            const raycaster = new THREE.Raycaster();
-            raycaster.setFromCamera({ x, y }, camera);
-
-            // Buat plane horizontal untuk intersect dengan ray
-            const plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);  // Sumbu Y
-            const intersection = new THREE.Vector3();
-            raycaster.ray.intersectPlane(plane, intersection);
-
-            // Jika ada intersection, tampilkan model pada posisi tersebut
-            if (intersection) {
-                log(`Intersection di: x=${intersection.x}, y=${intersection.y}, z=${intersection.z}`);
-
-                // Kontainer model
-                const modelContainer = document.getElementById('model-container');
-
-                // Hapus model sebelumnya jika ada
-                modelContainer.innerHTML = '';
-
-                // Tambahkan kotak visualisasi (untuk melihat apakah sentuhan bekerja)
-                const box = document.createElement('a-box');
-                box.setAttribute('position', `${intersection.x} ${intersection.y} ${intersection.z}`);
-                box.setAttribute('scale', '0.5 0.5 0.5');
-                box.setAttribute('color', 'blue');
-                modelContainer.appendChild(box);
-
-                // Tambahkan model GLB ke scene (fakultasteknik4.glb)
-                const model = document.createElement('a-entity');
-                model.setAttribute('gltf-model', 'url(assets/fakultasteknik4.glb)'); // Model fakultasteknik4
-                model.setAttribute('scale', '2 2 2'); // Sesuaikan skala
-                model.setAttribute('position', `${intersection.x} ${intersection.y} ${intersection.z}`);
-                modelContainer.appendChild(model);
-
-                model.addEventListener('model-loaded', () => {
-                    log('Model berhasil dimuat!');
-                });
-
-                model.addEventListener('error', () => {
-                    log('Gagal memuat model!');
-                });
-            } else {
-                log('Tidak ada intersection!');
-            }
-        }
-
-        // Event listener untuk klik dan sentuhan di overlay
-        document.getElementById('overlay').addEventListener('click', handleInteraction);
-        document.getElementById('overlay').addEventListener('touchstart', handleInteraction);
-
-    </script>
 </body>
 </html>
