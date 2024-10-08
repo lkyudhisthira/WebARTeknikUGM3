@@ -11,7 +11,7 @@
 
     <style>
         body { margin: 0; overflow: hidden; }
-        #log { position: absolute; top: 10px; left: 10px; color: red; }
+        #log { position: absolute; top: 10px; left: 10px; color: red; z-index: 2; }
         #overlay {
             position: absolute;
             top: 0;
@@ -90,10 +90,10 @@
                 box.setAttribute('color', 'blue');
                 modelContainer.appendChild(box);
 
-                // Tambahkan model GLB ke scene
+                // Tambahkan model GLB ke scene (fakultasteknik4.glb)
                 const model = document.createElement('a-entity');
-                model.setAttribute('gltf-model', 'url(https://cdn.rawgit.com/KhronosGroup/glTF-Sample-Models/master/2.0/AnimatedCube/glTF/AnimatedCube.gltf)');
-                model.setAttribute('scale', '0.5 0.5 0.5');
+                model.setAttribute('gltf-model', 'url(assets/fakultasteknik4.glb)'); // Model fakultasteknik4
+                model.setAttribute('scale', '2 2 2'); // Sesuaikan skala
                 model.setAttribute('position', `${intersection.x} ${intersection.y} ${intersection.z}`);
                 modelContainer.appendChild(model);
 
