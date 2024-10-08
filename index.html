@@ -19,11 +19,11 @@
             <!-- Model 3D yang ditampilkan -->
             <a-entity 
                 gltf-model="url(https://raw.githubusercontent.com/lkyudhisthira/WebARTeknikUGM3/main/assets/fakultasteknik4.glb)"
-                scale="0.5 0.5 0.5"
-                position="0 0 0">
+                scale="0.3 0.3 0.3" <!-- Ubah skala jika perlu -->
+                position="0 0 -0.5"> <!-- Posisi lebih jauh dari marker -->
             </a-entity>
         </a-marker>
-        <a-entity camera></a-entity>
+        <a-entity camera="fov: 60" look-controls></a-entity>
     </a-scene>
 </body>
 </html>
