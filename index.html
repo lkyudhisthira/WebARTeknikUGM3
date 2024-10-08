@@ -23,20 +23,15 @@
 <body>
     <div id="overlay"></div> <!-- Overlay untuk mendeteksi klik -->
     <a-scene embedded arjs="sourceType: webcam; videoTexture: true; debugUIEnabled: false; trackingMethod: best;">
-        <!-- Kamera AR -->
         <a-entity camera></a-entity>
-
-        <!-- Kotak untuk memeriksa jika elemen dapat ditampilkan -->
         <a-box position="0 0 -2" scale="1 1 1" color="red"></a-box>
-        
-        <!-- Menyimpan posisi objek -->
         <a-entity id="model-container"></a-entity>
     </a-scene>
 
     <script>
         // Event listener untuk mendeteksi ketukan pada overlay
-        document.getElementById('overlay').addEventListener('click', function (event) {
-            const intersection = document.querySelector('a-scene').components['arjs'].getIntersection(event);
+        document.querySelector('a-scene').addEventListener('click', function (event) {
+            const intersection = event.detail.intersection;
 
             if (intersection) {
                 console.log('Intersection detected:', intersection); // Log intersection
@@ -50,7 +45,6 @@
                 model.setAttribute('scale', '0.5 0.5 0.5'); // Skala model
                 model.setAttribute('position', `${intersection.point.x} ${intersection.point.y} ${intersection.point.z}`);
                 modelContainer.appendChild(model); // Menambahkan model ke container
-                console.log('Model added:', model); // Log jika model ditambahkan
 
                 // Menangani kesalahan pemuatan model
                 model.addEventListener('model-loaded', function () {
