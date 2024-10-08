@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AR Web with Tap</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AR Web - Model 3D Fakultas Teknik</title>
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
     <script src="https://cdn.rawgit.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
     <style>
@@ -22,7 +22,7 @@
 <body>
     <div id="overlay"></div>
     <a-scene embedded arjs="sourceType: webcam; trackingMethod: best;">
-        <a-entity camera="fov: 80; near: 0.1; far: 1000" position="0 1.6 3" look-controls></a-entity>
+        <a-entity camera position="0 1.6 0" look-controls></a-entity>
         <a-entity id="model-container"></a-entity>
     </a-scene>
 
@@ -46,7 +46,6 @@
 
             if (intersects.length > 0) {
                 const intersection = intersects[0];
-                console.log('Intersection detected:', intersection);
 
                 // Mengambil referensi ke container model
                 const modelContainer = document.getElementById('model-container');
@@ -57,7 +56,7 @@
                 // Membuat entitas model baru
                 const model = document.createElement('a-entity');
                 model.setAttribute('gltf-model', 'url(https://raw.githubusercontent.com/lkyudhisthira/WebARTeknikUGM3/main/assets/fakultasteknik4.glb)'); // Path model GLB Anda
-                model.setAttribute('scale', '0.1 0.1 0.1'); // Skala model yang lebih kecil
+                model.setAttribute('scale', '0.1 0.1 0.1'); // Skala model
                 model.setAttribute('position', `${intersection.point.x} ${intersection.point.y} ${intersection.point.z}`);
                 modelContainer.appendChild(model); // Menambahkan model ke container
 
