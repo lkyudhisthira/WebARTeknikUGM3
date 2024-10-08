@@ -17,6 +17,7 @@
             width: 100%;
             height: 100%;
             z-index: 1;
+            pointer-events: auto; /* Pastikan overlay bisa mendeteksi klik */
         }
     </style>
 </head>
@@ -30,8 +31,8 @@
 
     <script>
         // Event listener untuk mendeteksi ketukan pada overlay
-        document.querySelector('a-scene').addEventListener('click', function (event) {
-            const intersection = event.detail.intersection;
+        document.getElementById('overlay').addEventListener('click', function (event) {
+            const intersection = document.querySelector('a-scene').components['arjs'].getIntersection(event);
 
             if (intersection) {
                 console.log('Intersection detected:', intersection); // Log intersection
@@ -41,7 +42,7 @@
 
                 // Membuat entitas model baru
                 const model = document.createElement('a-entity');
-                model.setAttribute('gltf-model', 'url(assets/fakultasteknik4.glb)'); // Ganti dengan path model GLB Anda
+                model.setAttribute('gltf-model', 'url(https://yourdomain.com/assets/fakultasteknik4.glb)'); // Ganti dengan path model GLB Anda
                 model.setAttribute('scale', '0.5 0.5 0.5'); // Skala model
                 model.setAttribute('position', `${intersection.point.x} ${intersection.point.y} ${intersection.point.z}`);
                 modelContainer.appendChild(model); // Menambahkan model ke container
