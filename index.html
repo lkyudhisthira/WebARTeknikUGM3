@@ -12,11 +12,21 @@
     <style>
         body { margin: 0; overflow: hidden; }
         #log { position: absolute; top: 10px; left: 10px; color: red; }
+        #overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0); /* Transparan */
+            z-index: 2; /* Di atas AR */
+        }
     </style>
 </head>
 <body>
-    <div id="log">Menyentuh layar...</div> <!-- Log untuk debugging -->
-    
+    <div id="log">Menunggu interaksi...</div> <!-- Log untuk debugging -->
+    <div id="overlay"></div> <!-- Overlay transparan untuk deteksi sentuhan -->
+
     <!-- Scene A-Frame untuk AR -->
     <a-scene embedded arjs="sourceType: webcam; videoTexture: true; debugUIEnabled: false;">
         <!-- Kamera AR -->
@@ -99,9 +109,9 @@
             }
         }
 
-        // Event listener untuk klik dan sentuhan
-        document.querySelector('a-scene').addEventListener('click', handleInteraction);
-        document.querySelector('a-scene').addEventListener('touchstart', handleInteraction);
+        // Event listener untuk klik dan sentuhan di overlay
+        document.getElementById('overlay').addEventListener('click', handleInteraction);
+        document.getElementById('overlay').addEventListener('touchstart', handleInteraction);
 
     </script>
 </body>
