@@ -35,6 +35,11 @@
             const sceneEl = document.querySelector('a-scene');
             const camera = sceneEl.camera.el.object3D;
 
+            // Periksa apakah matriks proyeksi kamera telah diperbarui
+            if (!camera.projectionMatrixInverse) {
+                camera.updateProjectionMatrix();
+            }
+
             // Mendapatkan posisi klik relatif terhadap scene
             const rect = sceneEl.canvas.getBoundingClientRect();
             const x = (event.clientX - rect.left) / rect.width * 2 - 1;
@@ -42,7 +47,14 @@
 
             // Membuat vektor 3D berdasarkan koordinat klik
             const direction = new THREE.Vector3(x, y, 0.5);
-            direction.unproject(camera);
+
+            // Periksa apakah matriks sudah valid sebelum digunakan
+            if (camera.projectionMatrixInverse) {
+                direction.applyMatrix4(camera.projectionMatrixInverse).applyMatrix4(camera.matrixWorld);
+            } else {
+                console.error("projectionMatrixInverse is undefined!");
+                return;
+            }
 
             const raycaster = new THREE.Raycaster();
             raycaster.set(camera.position, direction.sub(camera.position).normalize());
