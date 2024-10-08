@@ -2,18 +2,68 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test GLB Model</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AR Tanpa Marker</title>
+
+    <!-- Mengimpor A-Frame dan AR.js -->
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.js"></script>
+    <style>
+        body { margin: 0; }
+        #overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+    </style>
 </head>
 <body>
-    <a-scene>
-        <a-assets>
-            <a-asset-item id="model-glb" src="assets/fakultasteknik4.glb"></a-asset-item>
-        </a-assets>
+    <div id="overlay"></div> <!-- Overlay untuk mendeteksi klik -->
+    <a-scene embedded arjs="sourceType: webcam; videoTexture: true; debugUIEnabled: false; trackingMethod: best;">
+        <!-- Kamera AR -->
+        <a-entity camera></a-entity>
 
-        <a-entity gltf-model="#model-glb" position="0 1 -5" scale="2 2 2"></a-entity>
-        <a-camera position="0 1.6 0"></a-camera>
+        <!-- Kotak untuk memeriksa jika elemen dapat ditampilkan -->
+        <a-box position="0 0 -2" scale="1 1 1" color="red"></a-box>
+        
+        <!-- Menyimpan posisi objek -->
+        <a-entity id="model-container"></a-entity>
     </a-scene>
+
+    <script>
+        // Event listener untuk mendeteksi ketukan pada overlay
+        document.getElementById('overlay').addEventListener('click', function (event) {
+            const intersection = document.querySelector('a-scene').components['arjs'].getIntersection(event);
+
+            if (intersection) {
+                console.log('Intersection detected:', intersection); // Log intersection
+
+                // Mengambil referensi ke container model
+                const modelContainer = document.getElementById('model-container');
+
+                // Membuat entitas model baru
+                const model = document.createElement('a-entity');
+                model.setAttribute('gltf-model', 'url(assets/fakultasteknik4.glb)'); // Ganti dengan path model GLB Anda
+                model.setAttribute('scale', '0.5 0.5 0.5'); // Skala model
+                model.setAttribute('position', `${intersection.point.x} ${intersection.point.y} ${intersection.point.z}`);
+                modelContainer.appendChild(model); // Menambahkan model ke container
+                console.log('Model added:', model); // Log jika model ditambahkan
+
+                // Menangani kesalahan pemuatan model
+                model.addEventListener('model-loaded', function () {
+                    console.log('Model successfully loaded!');
+                });
+
+                model.addEventListener('error', function () {
+                    console.error('Failed to load model!');
+                });
+            } else {
+                console.log('Tidak ada intersection!'); // Log jika tidak ada intersection
+            }
+        });
+    </script>
 </body>
 </html>
