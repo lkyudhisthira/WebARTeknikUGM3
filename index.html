@@ -2,95 +2,15 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AR Tanpa Marker</title>
-
-    <!-- Mengimpor A-Frame dan AR.js -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web AR</title>
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.js"></script>
-    <style>
-        body { margin: 0; }
-        #overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-            pointer-events: auto; /* Pastikan overlay bisa mendeteksi klik */
-        }
-    </style>
+    <script src="https://cdn.rawgit.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
 </head>
-<body>
-    <div id="overlay"></div> <!-- Overlay untuk mendeteksi klik -->
-    <a-scene embedded arjs="sourceType: webcam; videoTexture: true; debugUIEnabled: false; trackingMethod: best;">
-        <a-entity camera></a-entity>
-        <a-box position="0 0 -2" scale="1 1 1" color="red"></a-box>
-        <a-entity id="model-container"></a-entity>
+<body style="margin: 0; overflow: hidden;">
+    <a-scene embedded arjs="sourceType: webcam;">
+        <a-entity position="0 0 0" gltf-model="url(path_to_your_model.glb)" scale="0.5 0.5 0.5"></a-entity>
+        <a-marker-camera preset="hiro"></a-marker-camera>
     </a-scene>
-
-    <script>
-        // Event listener untuk mendeteksi ketukan pada overlay
-        document.getElementById('overlay').addEventListener('click', function (event) {
-            const sceneEl = document.querySelector('a-scene');
-            const camera = sceneEl.camera.el.object3D;
-
-            // Periksa apakah matriks proyeksi kamera telah diperbarui
-            if (!camera.projectionMatrixInverse) {
-                camera.updateProjectionMatrix();
-            }
-
-            // Mendapatkan posisi klik relatif terhadap scene
-            const rect = sceneEl.canvas.getBoundingClientRect();
-            const x = (event.clientX - rect.left) / rect.width * 2 - 1;
-            const y = -((event.clientY - rect.top) / rect.height * 2 - 1);
-
-            // Membuat vektor 3D berdasarkan koordinat klik
-            const direction = new THREE.Vector3(x, y, 0.5);
-
-            // Periksa apakah matriks sudah valid sebelum digunakan
-            if (camera.projectionMatrixInverse) {
-                direction.applyMatrix4(camera.projectionMatrixInverse).applyMatrix4(camera.matrixWorld);
-            } else {
-                console.error("projectionMatrixInverse is undefined!");
-                return;
-            }
-
-            const raycaster = new THREE.Raycaster();
-            raycaster.set(camera.position, direction.sub(camera.position).normalize());
-
-            // Melakukan raycasting untuk mendeteksi objek
-            const intersects = raycaster.intersectObjects(sceneEl.object3D.children, true);
-
-            if (intersects.length > 0) {
-                const intersection = intersects[0];
-                console.log('Intersection detected:', intersection); // Log intersection
-
-                // Mengambil referensi ke container model
-                const modelContainer = document.getElementById('model-container');
-
-                // Menghapus model yang sudah ada
-                modelContainer.innerHTML = '';
-
-                // Membuat entitas model baru
-                const model = document.createElement('a-entity');
-                model.setAttribute('gltf-model', 'url(https://raw.githubusercontent.com/lkyudhisthira/WebARTeknikUGM3/main/assets/fakultasteknik4.glb)'); // Path model GLB Anda
-                model.setAttribute('scale', '0.5 0.5 0.5'); // Skala model
-                model.setAttribute('position', `${intersection.point.x} ${intersection.point.y} ${intersection.point.z}`);
-                modelContainer.appendChild(model); // Menambahkan model ke container
-
-                // Menangani kesalahan pemuatan model
-                model.addEventListener('model-loaded', function () {
-                    console.log('Model successfully loaded!');
-                });
-
-                model.addEventListener('error', function () {
-                    console.error('Failed to load model!');
-                });
-            } else {
-                console.log('Tidak ada intersection!'); // Log jika tidak ada intersection
-            }
-        });
-    </script>
 </body>
 </html>
