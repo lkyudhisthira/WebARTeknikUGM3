@@ -3,27 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Web AR Model 3D</title>
-
-    <!-- Mengimpor A-Frame dan AR.js -->
+    <title>AR Web with Tap</title>
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
     <script src="https://cdn.rawgit.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
     <style>
-        body { margin: 0; overflow: hidden; }
+        body { margin: 0; }
+        #overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: auto; /* Pastikan overlay bisa mendeteksi klik */
+        }
     </style>
 </head>
 <body>
+    <div id="overlay"></div>
     <a-scene embedded arjs="sourceType: webcam; trackingMethod: best;">
-        <!-- Marker yang digunakan, dalam hal ini marker Hiro -->
-        <a-marker preset="hiro">
-            <!-- Model 3D yang ditampilkan -->
-            <a-entity 
-                gltf-model="url(https://raw.githubusercontent.com/lkyudhisthira/WebARTeknikUGM3/main/assets/fakultasteknik4.glb)"
-                scale="0.3 0.3 0.3" <!-- Ubah skala jika perlu -->
-                position="0 0 0"> <!-- Sesuaikan posisi jika perlu -->
-            </a-entity>
-        </a-marker>
-        <a-entity camera="fov: 80" position="0 0 1.5" look-controls></a-entity>
+        <a-entity camera position="0 0 0" look-controls></a-entity>
+        <a-entity id="model-container"></a-entity>
     </a-scene>
+
+    <script>
+        // Event listener untuk mendeteksi ketukan pada overlay
+        document.getElementById('overlay').addEventListener('click', function (event) {
+            const sceneEl = document.querySelector('a-scene');
+            const camera = sceneEl.camera.el.object3D;
+
+            // Mendapatkan posisi klik relatif terhadap scene
+            const rect = sceneEl.canvas.getBoundingClientRect();
+            const x = (event.clientX - rect.left) / rect.width * 2 - 1;
+            const y = -((event.clientY - rect.top) / rect.height * 2 - 1);
+
+            // Mendapatkan posisi di dunia 3D
+            const direction = new THREE.Vector3(x, y, 0.5).unproject(camera);
+            const raycaster = new THREE.Raycaster(camera.position, direction.sub(camera.position).normalize());
+
+            // Raycasting untuk mendeteksi objek
+            const intersects = raycaster.intersectObjects(sceneEl.object3D.children, true);
+
+            if (intersects.length > 0) {
+                const intersection = intersects[0];
+                console.log('Intersection detected:', intersection);
+
+                // Mengambil referensi ke container model
+                const modelContainer = document.getElementById('model-container');
+
+                // Menghapus model yang sudah ada
+                modelContainer.innerHTML = '';
+
+                // Membuat entitas model baru
+                const model = document.createElement('a-entity');
+                model.setAttribute('gltf-model', 'url(https://raw.githubusercontent.com/lkyudhisthira/WebARTeknikUGM3/main/assets/fakultasteknik4.glb)'); // Path model GLB Anda
+                model.setAttribute('scale', '0.5 0.5 0.5'); // Skala model
+                model.setAttribute('position', `${intersection.point.x} ${intersection.point.y} ${intersection.point.z}`);
+                modelContainer.appendChild(model); // Menambahkan model ke container
+
+                // Menangani kesalahan pemuatan model
+                model.addEventListener('model-loaded', function () {
+                    console.log('Model successfully loaded!');
+                });
+
+                model.addEventListener('error', function () {
+                    console.error('Failed to load model!');
+                });
+            } else {
+                console.log('Tidak ada intersection!'); // Log jika tidak ada intersection
+            }
+        });
+    </script>
 </body>
 </html>
